@@ -1,9 +1,6 @@
 import { text } from "body-parser";
 import { Request, Response } from "express";
 
-// const User = require("../Models/Users");
-// const Message = require("../Models/Messages");
-// const Page = require("../Models/Pages");
 import User from "../Models/Users.ts";
 import Message from "../Models/Messages.ts";
 import Page from "../Models/Pages.ts";
@@ -120,7 +117,3 @@ export {
     syncMessages,
     sendMessage
 };
-// module.exports = {
-//     syncMessages,
-//     sendMessage
-// };

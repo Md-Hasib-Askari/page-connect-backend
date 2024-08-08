@@ -1,8 +1,6 @@
 /*
 * Users model and schema for MongoDB
 * */
-// const mongoose = require('mongoose');
-// const bcrypt = require('bcrypt');
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
@@ -24,4 +22,3 @@ userSchema.pre('save', async function (this: any, next: any) {
 const userModel = mongoose.model('Users', userSchema);
 
 export default userModel;
-// module.exports = userModel;

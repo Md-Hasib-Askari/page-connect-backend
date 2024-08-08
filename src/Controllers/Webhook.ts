@@ -1,8 +1,5 @@
 import { Request, Response } from 'express';
 
-// const { getSocketIO } = require('../../socket');
-// const Message = require('../Models/Messages');
-// const Page = require('../Models/Pages');
 import { getSocketIO } from '../../socket.ts';
 import Message from '../Models/Messages.ts';
 import Page from '../Models/Pages.ts';
@@ -113,7 +110,3 @@ export {
     verifyWebhook,
     initWebhook,
 };
-// module.exports = {
-//     verifyWebhook,
-//     initWebhook,
-// };

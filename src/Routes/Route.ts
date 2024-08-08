@@ -8,11 +8,6 @@ import * as MessageController from '../Controllers/MessageController.ts';
 import authVerify from '../Middlewares/AuthVerify.ts';
 
 const router = express.Router();
-// const router = require('express').Router();
-// const UserController = require("../controllers/UserController");
-// const PageController = require("../controllers/PageController");
-// const MessageController = require("../controllers/MessageController");
-// const authVerify = require("../middlewares/AuthVerify");
 
 // User Routes
 router.get('/getUser', authVerify, UserController.getUser);
@@ -30,4 +25,3 @@ router.post('/savePage', authVerify, PageController.savePage);
 router.get('/syncMessages', authVerify, MessageController.syncMessages);
 
 export default router;
-// module.exports = router;

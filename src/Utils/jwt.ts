@@ -1,4 +1,3 @@
-// const jwt = require('jsonwebtoken');
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const secret = process.env.JWT_SECRET as string;
@@ -12,4 +11,3 @@ const verifyToken = (token: string): string | JwtPayload => {
 };
 
 export { generateToken, verifyToken };
-// module.exports = { generateToken, verifyToken };

@@ -1,7 +1,6 @@
 /*
 * Pages model and schema for MongoDB
 * */
-// const mongoose = require('mongoose');
 import mongoose from 'mongoose';
 
 const pageSchema = new mongoose.Schema({
@@ -14,4 +13,3 @@ const pageSchema = new mongoose.Schema({
 const pageModel = mongoose.model('Pages', pageSchema);
 
 export default pageModel;
-// module.exports = pageModel;

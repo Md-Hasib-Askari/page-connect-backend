@@ -1,7 +1,5 @@
-// const express = require('express');
 import express from 'express';
 
-// const WebhookController = require('../Controllers/Webhook');
 import * as WebhookController from '../Controllers/Webhook.ts';
 
 const router = express.Router();
@@ -12,4 +10,3 @@ router.post('/webhook', WebhookController.initWebhook);
 router.get('/webhook', WebhookController.verifyWebhook);
 
 export default router;
-// module.exports = router;

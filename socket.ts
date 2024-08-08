@@ -1,8 +1,6 @@
 import { Server as HttpServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import { JwtPayload } from 'jsonwebtoken';
-// const { verifyToken } = require('./src/Utils/jwt');
-// const { sendMessage } = require('./src/Controllers/MessageController');
 import { verifyToken } from './src/Utils/jwt.ts';
 import { sendMessage } from './src/Controllers/MessageController.ts';
 
@@ -11,7 +9,7 @@ let io: SocketIOServer | null = null;
 const initSocket = (server: HttpServer) => {
     io = new SocketIOServer(server, {
         cors: {
-            origin: '*',
+            origin: 'https://page-connect.vercel.app',
             methods: ['GET', 'POST']
         }
     });
@@ -64,7 +62,3 @@ const getSocketIO = () => {
 }
 
 export { initSocket, getSocketIO };
-// module.exports = { 
-//     initSocket,
-//     getSocketIO
-// };

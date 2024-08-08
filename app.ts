@@ -16,21 +16,6 @@ import { verifyToken } from './src/Utils/jwt.ts';
 import apiRouter from './src/Routes/Route.ts';
 import webhookRouter from './src/Routes/facebook.ts';
 
-// const express = require('express');
-// const http = require('http');
-// const cors = require('cors');
-// const bodyParser = require('body-parser');
-// const helmet = require('helmet');
-// const hpp = require('hpp');
-// const xssClean = require('xss-clean');
-// const rateLimit = require('express-rate-limit');
-// const mongoose = require('mongoose');
-// const { initSocket } = require('./socket');
-// const { verifyToken } = require('./src/Utils/jwt');
-
-// const apiRouter = require('./src/Routes/Route');
-// const webhookRouter = require('./src/Routes/facebook');
-
 // Server Initialization
 const app = express();
 const server = http.createServer(app);
@@ -43,7 +28,7 @@ app.use(rateLimit({
     max: 500, // limit each IP to 100 requests per windowMs
 }));
 app.use(cors({
-    origin: ['http://localhost:3000', 'https://localhost:3000', '*'],
+    origin: ['http://localhost:3000', 'https://localhost:3000', 'https://page-connect.vercel.app'],
 }));
 app.use(bodyParser.json());
 app.use(helmet());

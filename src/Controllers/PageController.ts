@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 
-// const User = require("../Models/Users");
-// const Page = require("../Models/Pages");
 import User from "../Models/Users.ts";
 import Page from "../Models/Pages.ts";
 
@@ -123,8 +121,3 @@ export {
   getPage,
   savePage,
 };
-// module.exports = {
-//   getPages,
-//   getPage,
-//   savePage,
-// };

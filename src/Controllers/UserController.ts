@@ -1,7 +1,5 @@
 import { Request, Response } from 'express'
 ;
-// const { generateToken } = require('../Utils/jwt');
-// const User = require('../Models/Users');
 import { generateToken } from '../Utils/jwt.ts';
 import User from '../Models/Users.ts';
 
