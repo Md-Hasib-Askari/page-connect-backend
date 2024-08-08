@@ -1,9 +1,12 @@
 import { text } from "body-parser";
 import { Request, Response } from "express";
 
-const User = require("../Models/Users");
-const Message = require("../Models/Messages");
-const Page = require("../Models/Pages");
+// const User = require("../Models/Users");
+// const Message = require("../Models/Messages");
+// const Page = require("../Models/Pages");
+import User from "../Models/Users.ts";
+import Message from "../Models/Messages.ts";
+import Page from "../Models/Pages.ts";
 
 const FB_URI = process.env.FB_URI || "https://graph.facebook.com";
 
@@ -58,8 +61,8 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         const page = await Page.findOne({
             pageID: user.page,
         });
-        const pageID = page.pageID;
-        const accessToken = page.accessToken; // get access token from user object
+        const pageID = page?.pageID;
+        const accessToken = page?.accessToken; // get access token from user object
 
         // send message to Facebook using the access token
         const response = await fetch(`${FB_URI}/${pageID}/messages?access_token=${accessToken}`, {
@@ -85,7 +88,7 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         
         const newMessage = {
             sender: {
-                "name": page.name,
+                "name": page?.name,
                 "id": pageID
             },
             message: message,
@@ -113,7 +116,11 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
     }
 }
 
-module.exports = {
+export {
     syncMessages,
     sendMessage
 };
+// module.exports = {
+//     syncMessages,
+//     sendMessage
+// };

@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 
-const User = require("../Models/Users");
-const Page = require("../Models/Pages");
+// const User = require("../Models/Users");
+// const Page = require("../Models/Pages");
+import User from "../Models/Users.ts";
+import Page from "../Models/Pages.ts";
 
 const FB_URI = process.env.FB_URI || "https://graph.facebook.com";
 
@@ -56,9 +58,9 @@ const getPage = async (req: Request, res: Response) => {
     });
     
     const data = {
-      pageID: page.pageID,
-      name: page.name,
-      accessToken: page.accessToken
+      pageID: page?.pageID,
+      name: page?.name,
+      accessToken: page?.accessToken
     }
 
     return res.json({ status: "success", data });
@@ -116,8 +118,13 @@ const savePage = async (req: Request, res: Response) => {
   }
 };
 
-module.exports = {
+export {
   getPages,
   getPage,
   savePage,
 };
+// module.exports = {
+//   getPages,
+//   getPage,
+//   savePage,
+// };

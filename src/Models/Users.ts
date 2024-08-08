@@ -1,8 +1,10 @@
 /*
 * Users model and schema for MongoDB
 * */
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+// const mongoose = require('mongoose');
+// const bcrypt = require('bcrypt');
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
     facebookID: { type: String, required: true, unique: true },
@@ -20,4 +22,6 @@ userSchema.pre('save', async function (this: any, next: any) {
 });
 
 const userModel = mongoose.model('Users', userSchema);
-module.exports = userModel;
+
+export default userModel;
+// module.exports = userModel;

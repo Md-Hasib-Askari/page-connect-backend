@@ -1,10 +1,12 @@
 import {NextFunction, Request, Response} from 'express';
+import { Secret, GetPublicKeyOrSecret } from 'jsonwebtoken';
 
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET as Secret | GetPublicKeyOrSecret;
 
-module.exports = (req: Request, res: Response, next: NextFunction) => {
+export default (req: Request, res: Response, next: NextFunction) => {
     let token = req.headers['authorization'] as string;
     
     if (token) {

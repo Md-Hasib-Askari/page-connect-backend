@@ -1,7 +1,8 @@
 /*
 * Pages model and schema for MongoDB
 * */
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const pageSchema = new mongoose.Schema({
     pageID: { type: String, required: true, unique: true },
@@ -11,4 +12,6 @@ const pageSchema = new mongoose.Schema({
 
 
 const pageModel = mongoose.model('Pages', pageSchema);
-module.exports = pageModel;
+
+export default pageModel;
+// module.exports = pageModel;

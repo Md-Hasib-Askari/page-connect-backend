@@ -2,21 +2,34 @@
 * Add all your Express app configurations here
 * */
 
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
+import { initSocket } from './socket.ts';
+import { verifyToken } from './src/Utils/jwt.ts';
 
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const helmet = require('helmet');
-const hpp = require('hpp');
-const xssClean = require('xss-clean');
-const rateLimit = require('express-rate-limit');
-const mongoose = require('mongoose');
-const { initSocket } = require('./socket');
-const { verifyToken } = require('./src/Utils/jwt');
+import apiRouter from './src/Routes/Route.ts';
+import webhookRouter from './src/Routes/facebook.ts';
 
-const apiRouter = require('./src/Routes/Route');
-const webhookRouter = require('./src/Routes/facebook');
+// const express = require('express');
+// const http = require('http');
+// const cors = require('cors');
+// const bodyParser = require('body-parser');
+// const helmet = require('helmet');
+// const hpp = require('hpp');
+// const xssClean = require('xss-clean');
+// const rateLimit = require('express-rate-limit');
+// const mongoose = require('mongoose');
+// const { initSocket } = require('./socket');
+// const { verifyToken } = require('./src/Utils/jwt');
+
+// const apiRouter = require('./src/Routes/Route');
+// const webhookRouter = require('./src/Routes/facebook');
 
 // Server Initialization
 const app = express();
@@ -35,12 +48,12 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(hpp({checkBody: true, checkQuery: true}));
-app.use(xssClean());
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/chatapp';
+mongoose.connect(MONGO_URI, {
+    // useNewUrlParser: true,
+    // useUnifiedTopology: true,
 });
 
 // Routes
@@ -59,7 +72,7 @@ io.use((socket: any, next: any) => {
     const token = socket.handshake.auth.token;
     
     if (token) {
-        const { id: userID } = verifyToken(token);
+        const { id: userID } = verifyToken(token) as any;
         socket.data = { userID };
         return next();
     }
@@ -79,7 +92,4 @@ io.on('connection', (socket: any) => {
     });
 });
 
-module.exports = {
-    server,
-    io
-};
+export { server, io };

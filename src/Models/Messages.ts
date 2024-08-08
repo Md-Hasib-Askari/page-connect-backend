@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
     pageID: {
@@ -36,4 +37,4 @@ const messageSchema = new mongoose.Schema({
     }]
 }, {versionKey: false, timestamps: true});
 
-module.exports = mongoose.model('Message', messageSchema);
+export default mongoose.model('Message', messageSchema);

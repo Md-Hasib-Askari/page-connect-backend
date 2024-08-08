@@ -1,11 +1,18 @@
 /*
 * Add all your Routes here and export them
 */
-const router = require('express').Router();
-const UserController = require("../controllers/UserController");
-const PageController = require("../controllers/PageController");
-const MessageController = require("../controllers/MessageController");
-const authVerify = require("../middlewares/AuthVerify");
+import express from 'express';
+import * as UserController from '../Controllers/UserController.ts';
+import * as PageController from '../Controllers/PageController.ts';
+import * as MessageController from '../Controllers/MessageController.ts';
+import authVerify from '../Middlewares/AuthVerify.ts';
+
+const router = express.Router();
+// const router = require('express').Router();
+// const UserController = require("../controllers/UserController");
+// const PageController = require("../controllers/PageController");
+// const MessageController = require("../controllers/MessageController");
+// const authVerify = require("../middlewares/AuthVerify");
 
 // User Routes
 router.get('/getUser', authVerify, UserController.getUser);
@@ -22,4 +29,5 @@ router.post('/savePage', authVerify, PageController.savePage);
 // Message Routes
 router.get('/syncMessages', authVerify, MessageController.syncMessages);
 
-module.exports = router;
+export default router;
+// module.exports = router;

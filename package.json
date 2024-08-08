@@ -1,10 +1,12 @@
 {
-  "name": "express-template",
+  "name": "page-connect",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon --exec ts-node index.ts",
+    "dev": "nodemon --exec tsx index.ts",
+    "start": "node index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -38,9 +40,12 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "@types/node": "^22.1.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/hpp": "^0.2.6",
+    "@types/jsonwebtoken": "^9.0.6",
     "concurrently": "^8.2.2",
     "nodemon": "^3.0.2",
+    "tsx": "^4.17.0",
     "typescript": "^5.3.3"
   }
 }

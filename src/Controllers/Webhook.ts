@@ -1,8 +1,11 @@
 import { Request, Response } from 'express';
 
-const { getSocketIO } = require('../../socket');
-const Message = require('../Models/Messages');
-const Page = require('../Models/Pages');
+// const { getSocketIO } = require('../../socket');
+// const Message = require('../Models/Messages');
+// const Page = require('../Models/Pages');
+import { getSocketIO } from '../../socket.ts';
+import Message from '../Models/Messages.ts';
+import Page from '../Models/Pages.ts';
 
 const FB_URI = process.env.FB_URI || 'https://graph.facebook.com';
 
@@ -34,7 +37,7 @@ const initWebhook = (req: Request, res: Response) => {
             const page = await Page.findOne({
                 pageID: pageID,
             });
-            const accessToken = page.accessToken; // get access token from user object
+            const accessToken = page?.accessToken; // get access token from user object
             const senderID = webhook_event.sender.id;
 
             // fetch user from facebook
@@ -106,7 +109,11 @@ const handleMessage = async (senderID: string, receivedMessage: any) => {
     }
 }
 
-module.exports = {
+export {
     verifyWebhook,
     initWebhook,
 };
+// module.exports = {
+//     verifyWebhook,
+//     initWebhook,
+// };

@@ -2,25 +2,16 @@
 * This is the main file for initializing your server
 */
 
-// Importing the ngrok module to create a tunnel
-const ngrok = require('@ngrok/ngrok');
 // Importing the dotenv module to read the .env file
-const dotenv = require('dotenv');
-dotenv.config({
-    path: './config.env'
+import { config } from 'dotenv';
+config({
+    path: './.env'
 });
 
 // Importing the app module
-const { server: initializeApp } = require('./app');
+import { server as initializeApp } from './app.ts';
 
+const PORT = process.env.RUNNING_PORT || 5000;
 initializeApp.listen(process.env.RUNNING_PORT, async () => {
     console.log(`Server running @ http://localhost:${process.env.RUNNING_PORT}`)
-    try {
-        // ngrok.connect({ addr: process.env.RUNNING_PORT, authtoken_from_env: true })
-	    //     .then((listener: any) => {
-        //         console.log(`Ingress established at: ${listener.url()}`)
-        //     });     
-    } catch (error) {
-        console.log(error);
-    }
 });
