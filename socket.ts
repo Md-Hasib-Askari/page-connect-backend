@@ -39,9 +39,10 @@ const initSocket = (server: HttpServer) => {
 
             // send message to recipient
             if (userID) {
-                sendMessage(userID, recipient, message);
+                sendMessage(userID, recipient, message).then((response: any) => {
+                    socket.emit('private_message', response);
+                });
             }
-            // io?.emit('private_message', data);
         });
 
         socket.on('disconnect', () => {

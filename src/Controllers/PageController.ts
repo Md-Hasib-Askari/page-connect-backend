@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 
 const User = require("../Models/Users");
 const Page = require("../Models/Pages");
@@ -52,8 +52,9 @@ const getPage = async (req: Request, res: Response) => {
 
     // search for page in the database using pageID
     const page = await Page.findOne({
-      _id: pageID,
+      pageID,
     });
+    
     const data = {
       pageID: page.pageID,
       name: page.name,
@@ -86,8 +87,10 @@ const savePage = async (req: Request, res: Response) => {
     }
 
     // search for page in the database using pageID
-    let pageData = await Page.findOne({ pageID });
-
+    let pageData = await Page.findOne({ 
+        pageID
+     });    
+    
     // if page is not found, create a new page
     if (!pageData) {
         pageData = new Page({
@@ -99,12 +102,14 @@ const savePage = async (req: Request, res: Response) => {
     }
 
     // save page id to user object
-    user.page = pageData._id;
+    user.page = pageData.pageID;
     await user.save();
 
     res.json({ status: "success", message: "Pages saved successfully" });
 
   } catch (error: any) {
+    console.error(error);
+    
     return res
       .status(400)
       .json({ status: "error", error: error.message || "something went wrong." });

@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     accessToken: { type: String, required: true },
     name: { type: String },
     jwtToken: { type: String },
-    page: { type: mongoose.Schema.Types.ObjectId, ref: 'Pages' },
+    page: String,
 }, {timestamps: true, versionKey: false});
 
 userSchema.pre('save', async function (this: any, next: any) {

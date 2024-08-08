@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-    user: {
+    pageID: {
+        type: String,
+        required: true
+    },
+    recipient: {
         id: {
             type: String,
             required: true,
@@ -10,7 +14,8 @@ const messageSchema = new mongoose.Schema({
         name: {
             type: String,
             required: true
-        }
+        },
+        profileImage: String
     },
     lastMessage: {
         message: String,
@@ -27,9 +32,7 @@ const messageSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        createdTime: {
-            type: Date,
-        }
+        createdTime: Date,
     }]
 }, {versionKey: false, timestamps: true});
 

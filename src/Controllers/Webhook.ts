@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 
 const { getSocketIO } = require('../../socket');
+const Message = require('../Models/Messages');
+const Page = require('../Models/Pages');
 
 const FB_URI = process.env.FB_URI || 'https://graph.facebook.com';
 
@@ -24,20 +26,49 @@ const initWebhook = (req: Request, res: Response) => {
     const body = req.body;
     
     if (body.object === 'page') {
-        body.entry.forEach((entry: any) => {
+        body.entry.forEach(async (entry: any) => {
             const pageID = entry.messaging[0].recipient.id;
             const webhook_event = entry.messaging[0];
-            const sender_psid = webhook_event.sender.id;
-            const message = {
-                text: webhook_event.message?.text,
-                user: sender_psid,
-                time: Date.now()
-            };
 
+            // fetch access token from the database of the page
+            const page = await Page.findOne({
+                pageID: pageID,
+            });
+            const accessToken = page.accessToken; // get access token from user object
+            const senderID = webhook_event.sender.id;
+
+            // fetch user from facebook
+            const fields = ['id', 'name', 'profile_pic'].join(',')
+            const sender = await fetch(`${FB_URI}/${senderID}?fields=${fields}&access_token=${accessToken}`);
+            const senderJson = await sender.json();
+            const senderName = senderJson.name;
+            const senderImage = senderJson.profile_pic;
+
+            // create new message
+            const newMessage = {
+                pageID,
+                recipient: {
+                    id: webhook_event.sender.id,
+                    name: senderName,
+                    profileImage: senderImage
+                },
+                lastMessage: {
+                    message: webhook_event.message?.text,
+                    createdTime: webhook_event.timestamp,
+                },
+                messages: [{
+                    sender: {
+                        name: senderName,
+                        id: senderID,
+                    },
+                    message: webhook_event.message?.text,
+                    createdTime: webhook_event.timestamp,
+                }]
+            }
+        
+            // save message
             if (webhook_event.message) {
-                handleMessage(sender_psid, pageID, message);
-            } else if (webhook_event.postback) {
-                handlePostback(sender_psid, webhook_event.postback);
+                handleMessage(senderID, newMessage);
             }
         });
         return res.status(200).send('EVENT_RECEIVED');
@@ -46,56 +77,33 @@ const initWebhook = (req: Request, res: Response) => {
     }
 }
 
-const handleMessage = (sender_psid: string, pageID: string, received_message: any) => {
-    if (received_message.text) {
+const handleMessage = async (senderID: string, receivedMessage: any) => {
+    if (receivedMessage) {
         const io = getSocketIO();
-        
-        io.emit('private_message', received_message);
-    }
-}
 
-const handlePostback = (sender_psid: string, received_postback: any) => {
-    let response;
-    const payload = received_postback.payload;
-    if (payload === 'yes') {
-        response = { text: 'Thanks!' };
-    } else if (payload === 'no') {
-        response = { text: 'Oops, try sending another image.' };
-    }
-    callSendAPI(sender_psid, response);
-}
+        try {
+            // find message by user id
+            const sender = await Message.findOne({ 'recipient.id': senderID });
 
-const callSendAPI = (sender_psid: string, response: any) => {
-    const request_body = {
-        recipient: {
-            id: sender_psid
-        },
-        message: response
-    }
-
-    fetch(`${FB_URI}/me/messages?access_token=${process.env.PAGE_ACCESS_TOKEN}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(request_body)
-    })
-    .then(res => {
-        if (res.ok) {
-            console.log('Message sent!');
+            // if user exists update the messages or insert whole message
+            if (!sender) {
+                await Message.create(receivedMessage);
+            } else {
+                await Message.updateOne({ 'recipient.id': senderID }, 
+                    { 
+                        $set: {
+                            'lastMessage.message': receivedMessage.lastMessage.message,
+                            'lastMessage.createdTime': receivedMessage.lastMessage.timestamp
+                        },
+                        $push: { messages: receivedMessage.messages[0] } 
+                    });                
+            }
+            io.emit('private_message', receivedMessage);
+            console.log('Message sent.')
+        } catch (err: any) {
+            console.log('Error: ', err.message);
         }
-    })
-    .catch(err => {
-        console.error('Unable to send message:' + err);
-    });
-}
-
-// send message to user
-const sendMessage = (sender_psid: string, message: string) => {
-    const response = {
-        text: message
     }
-    callSendAPI(sender_psid, response);
 }
 
 module.exports = {
