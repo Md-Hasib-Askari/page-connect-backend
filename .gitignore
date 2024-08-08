@@ -4,5 +4,6 @@
 package-lock.json
 config.env
 
+.env
 .vercel
 *.js
