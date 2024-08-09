@@ -3,10 +3,7 @@
 */
 
 // Importing the dotenv module to read the .env file
-import { config } from 'dotenv';
-config({
-    path: './.env'
-});
+import 'dotenv/config'
 
 // Importing the app module
 import { server as initializeApp } from './app.ts';

@@ -31,8 +31,9 @@ app.use(cors({
     origin: ['http://localhost:3000', 'https://localhost:3000', 'https://page-connect.vercel.app'],
 }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
-app.use(hpp({checkBody: true, checkQuery: true}));
+app.use(hpp());
 
 // MongoDB connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/chatapp';

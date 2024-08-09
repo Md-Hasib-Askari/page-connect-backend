@@ -9,7 +9,7 @@ let io: SocketIOServer | null = null;
 const initSocket = (server: HttpServer) => {
     io = new SocketIOServer(server, {
         cors: {
-            origin: 'https://page-connect.vercel.app',
+            origin: ['https://page-connect.vercel.app', 'https://localhost:3000'],
             methods: ['GET', 'POST']
         }
     });
