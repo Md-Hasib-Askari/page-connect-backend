@@ -1,12 +1,28 @@
 /*
 * Users model and schema for MongoDB
 * */
-import mongoose from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 
-const userSchema = new mongoose.Schema({
+interface IUser {
+   facebookID: string;
+   accessToken: {
+      token: string;
+      expiresIn: number;
+   };
+   name: string;
+   jwtToken: string;
+   page: string;
+}
+
+interface IUserDocument extends IUser, mongoose.Document {}
+
+const userSchema: Schema<IUserDocument> = new mongoose.Schema<IUserDocument>({
     facebookID: { type: String, required: true, unique: true },
-    accessToken: { type: String, required: true },
+    accessToken: {
+      token: String,
+      expiresIn: Number,
+   },
     name: { type: String },
     jwtToken: { type: String },
     page: String,
@@ -19,6 +35,6 @@ userSchema.pre('save', async function (this: any, next: any) {
    next();
 });
 
-const userModel = mongoose.model('Users', userSchema);
+const userModel: Model<IUserDocument> = mongoose.model<IUserDocument>('Users', userSchema);
 
-export default userModel;
+export { userModel, IUserDocument};

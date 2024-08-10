@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 
 import { getSocketIO } from '../../socket.ts';
-import Message from '../Models/Messages.ts';
-import Page from '../Models/Pages.ts';
+import {messageModel as Message} from '../Models/Messages.ts';
+import {IPageDocument, PageModel as Page} from '../Models/Pages.ts';
 
 const FB_URI = process.env.FB_URI || 'https://graph.facebook.com';
 
@@ -33,7 +33,7 @@ const initWebhook = (req: Request, res: Response) => {
             // fetch access token from the database of the page
             const page = await Page.findOne({
                 pageID: pageID,
-            });
+            }) as IPageDocument;
             const accessToken = page?.accessToken; // get access token from user object
             const senderID = webhook_event.sender.id;
 
@@ -68,7 +68,7 @@ const initWebhook = (req: Request, res: Response) => {
         
             // save message
             if (webhook_event.message) {
-                handleMessage(senderID, newMessage);
+                await handleMessage(senderID, newMessage);
             }
         });
         return res.status(200).send('EVENT_RECEIVED');

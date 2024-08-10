@@ -1,15 +1,29 @@
 /*
 * Pages model and schema for MongoDB
 * */
-import mongoose from 'mongoose';
+import mongoose, { Model, Schema, Document } from 'mongoose';
 
-const pageSchema = new mongoose.Schema({
+interface IPage {
+    pageID: string,
+    accessToken: {
+        token: string,
+        expires: number
+    },
+    name: string
+}
+
+interface IPageDocument extends IPage, Document {}
+
+const pageSchema: Schema = new mongoose.Schema<IPageDocument>({
     pageID: { type: String, required: true, unique: true },
-    accessToken: { type: String },
-    name: { type: String },
+    accessToken: {
+        token: String,
+        expires: Number
+    },
+    name: String ,
 }, {timestamps: true, versionKey: false});
 
 
-const pageModel = mongoose.model('Pages', pageSchema);
+const PageModel: Model<IPageDocument> = mongoose.model<IPageDocument>('Pages', pageSchema);
 
-export default pageModel;
+export { PageModel, IPageDocument };

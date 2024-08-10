@@ -8,7 +8,7 @@ import 'dotenv/config'
 // Importing the app module
 import { server as initializeApp } from './app.ts';
 
-const PORT = process.env.RUNNING_PORT || 5000;
-initializeApp.listen(process.env.RUNNING_PORT, async () => {
-    console.log(`Server running @ http://localhost:${process.env.RUNNING_PORT}`)
+const PORT: number = Number(process.env.RUNNING_PORT) || 5000;
+initializeApp.listen(PORT, () => {
+    console.log(`Server running @ http://localhost:${PORT}`)
 });

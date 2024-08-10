@@ -1,6 +1,29 @@
-import mongoose from 'mongoose';
+import mongoose, {Document, Model, Schema} from 'mongoose';
 
-const messageSchema = new mongoose.Schema({
+interface IMessage {
+    pageID: string;
+    recipient: {
+        id: string;
+        name: string;
+        profileImage?: string;
+    };
+    lastMessage: {
+        message: string;
+        createdTime: Date;
+    };
+    messages: Array<{
+        sender: {
+            name: string;
+            id: string;
+        };
+        message: string;
+        createdTime: Date;
+    }>;
+}
+
+interface IMessageDocument extends IMessage, Document {}
+
+const messageSchema: Schema<IMessageDocument> = new mongoose.Schema<IMessageDocument>({
     pageID: {
         type: String,
         required: true
@@ -36,4 +59,6 @@ const messageSchema = new mongoose.Schema({
     }]
 }, {versionKey: false, timestamps: true});
 
-export default mongoose.model('Message', messageSchema);
+const messageModel: Model<IMessageDocument> = mongoose.model<IMessageDocument>('Message', messageSchema);
+
+export {messageModel, IMessageDocument};

@@ -1,7 +1,5 @@
 import {NextFunction, Request, Response} from 'express';
-import { Secret, GetPublicKeyOrSecret } from 'jsonwebtoken';
-
-import jwt from 'jsonwebtoken';
+import jwt, {GetPublicKeyOrSecret, Secret} from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET as Secret | GetPublicKeyOrSecret;
 
@@ -16,9 +14,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
             console.log(err);
             res.status(401).json({status:"unauthorized"})
         } else {
-            let userID = decoded['id'];
-            
-            req.headers.userID = userID;
+            req.headers.userID = decoded['id'] as string;
             next();
         }
     })

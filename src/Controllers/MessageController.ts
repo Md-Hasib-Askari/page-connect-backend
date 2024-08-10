@@ -1,9 +1,9 @@
-import { text } from "body-parser";
 import { Request, Response } from "express";
 
-import User from "../Models/Users.ts";
-import Message from "../Models/Messages.ts";
-import Page from "../Models/Pages.ts";
+import {userModel as User, IUserDocument} from "../Models/Users.ts";
+import { messageModel as Message, IMessageDocument} from "../Models/Messages.ts";
+import {IPageDocument, PageModel as Page} from "../Models/Pages.ts";
+import { refreshPageToken } from "../Utils/refreshTokens.ts";
 
 const FB_URI = process.env.FB_URI || "https://graph.facebook.com";
 
@@ -15,7 +15,7 @@ const syncMessages = async (req: Request, res: Response) => {
         // search for user in the database using userID
         const user = await User.findOne({
             _id: userID,
-        });
+        }) as IUserDocument
 
         // if user is not found, return unauthorized error
         if (!user) {
@@ -48,7 +48,7 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         // search for user in the database using userID
         const user = await User.findOne({
             _id: userID,
-        });
+        }) as IUserDocument;
         // if user is not found, return unauthorized error
         if (!user) {
             return { status: "error", error: "Unauthorized" };
@@ -57,12 +57,14 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         // fetch access token from the database of the page
         const page = await Page.findOne({
             pageID: user.page,
-        });
+        }) as IPageDocument;
         const pageID = page?.pageID;
-        const accessToken = page?.accessToken; // get access token from user object
+
+        // refresh page token if expired
+        if (page) await refreshPageToken(page, user.accessToken.token);
 
         // send message to Facebook using the access token
-        const response = await fetch(`${FB_URI}/${pageID}/messages?access_token=${accessToken}`, {
+        const response = await fetch(`${FB_URI}/${pageID}/messages?access_token=${page?.accessToken.token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -79,9 +81,9 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         });
         const data = await response.json() as any;
 
-        console.log('data ', data);
-    
-        console.log('testing..........');
+        if (data.error) {
+            return { status: "error", error: data.error.message || "something went wrong." };
+        }
         
         const newMessage = {
             sender: {
@@ -91,7 +93,6 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
             message: message,
             createdTime: new Date()
         }
-        console.log('newMessage ', newMessage);
         
         const result = await Message.findOneAndUpdate({
             pageID: pageID,
@@ -104,7 +105,8 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
             $push: {
                 messages: newMessage
             }
-        }, { upsert: true });    
+        }, { upsert: true }) as IMessageDocument;
+        console.log(result);
 
         return { status: "success", data: newMessage };
 

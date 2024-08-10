@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 
-import User from "../Models/Users.ts";
-import Page from "../Models/Pages.ts";
-import Message from "../Models/Messages.ts";
+import {userModel as User, IUserDocument} from "../Models/Users.ts";
+import { PageModel as Page, IPageDocument} from "../Models/Pages.ts";
+import {messageModel as Message, IMessageDocument} from "../Models/Messages.ts";
+import { refreshPageToken } from "../Utils/refreshTokens.ts";
 
 const FB_URI = process.env.FB_URI || "https://graph.facebook.com";
 
@@ -14,13 +15,13 @@ const getPages = async (req: Request, res: Response) => {
     // search for user in the database using userID
     const user = await User.findOne({
       _id: userID,
-    });
+    }) as IUserDocument;
     
     // if user is not found, return unauthorized error
     if (!user) {
       return res.status(401).json({ status: "error", error: "Unauthorized" });
     }
-    const accessToken = user.accessToken; // get access token from user object
+    const accessToken = user.accessToken.token; // get access token from user object
 
     // fetch pages using the access token
     const response = await fetch(
@@ -44,23 +45,26 @@ const getPage = async (req: Request, res: Response) => {
     // search for user in the database using userID
     const user = await User.findOne({
       _id: userID,
-    });
+    }) as IUserDocument;
 
     // if user is not found, return unauthorized error
     if (!user) {
       return res.status(401).json({ status: "error", error: "Unauthorized" });
     }
     const pageID = user.page; // get page ID from user object
-
+    
     // search for page in the database using pageID
     const page = await Page.findOne({
       pageID,
-    });
+    }) as IPageDocument;
+
+    // validating page access token
+    if (page) await refreshPageToken(page, user.accessToken.token);
     
     const data = {
       pageID: page?.pageID,
       name: page?.name,
-      accessToken: page?.accessToken
+      accessToken: page?.accessToken.token
     }
 
     return res.json({ status: "success", data });
@@ -81,7 +85,7 @@ const savePage = async (req: Request, res: Response) => {
     // search for user in the database using userID
     const user = await User.findOne({
         _id: userID,
-    });
+    }) as IUserDocument;
 
     // if user is not found, return unauthorized error
     if (!user) {
@@ -89,15 +93,22 @@ const savePage = async (req: Request, res: Response) => {
     }
 
     // search for page in the database using pageID
-    let pageData = await Page.findOne({ 
+    let pageData = await Page.findOne({
         pageID
-     });    
+     }) as IPageDocument;
+
+    // fetch page access token information
+    const fb_response = await fetch(`https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${user.accessToken.token}`)
+    const tokenData = await fb_response.json() as {data: {expires_at: number}};
     
     // if page is not found, create a new page
     if (!pageData) {
         pageData = new Page({
             pageID,
-            accessToken: accessToken,
+            accessToken: {
+              token: accessToken,
+              expires: tokenData.data.expires_at
+            },
             name,
         });
         await pageData.save();
@@ -110,20 +121,23 @@ const savePage = async (req: Request, res: Response) => {
     // fetch all messages from the page and save them to the database
     const response = await fetch(
       `${FB_URI}/${pageID}/conversations?fields=participants%2Cmessages%7Bmessage%2Cfrom%2Ccreated_time%7D&access_token=${accessToken}`
-    );
+    ) as any;
     const data = await response.json() as any;
-    const conversations = data.data;
+    const conversations = data.data as {
+        participants: { data: { id: string, name: string }[] },
+        messages: { data: { message: string, from: { id: string, name: string }, created_time: string }[] }
+        }[]
 
     
     for (let i = 0; i < conversations.length; i++) {
       const conversation = conversations[i];
-      let recipient = conversation.participants.data[0];
+      let recipient = conversation.participants.data[0] as { id: string, name: string } | { id: string, name: string, profileImage: string };
 
       // lastMessage
-      let lastMessage = conversation.messages.data[0];
-      lastMessage = {
-        message: lastMessage.message,
-        createdTime: lastMessage.created_time
+      const latest = conversation.messages.data[0] as { created_time: string; message: string };
+      const lastMessage = {
+        message: latest.message,
+        createdTime: latest.created_time
       }
 
       // messages[]
@@ -142,8 +156,10 @@ const savePage = async (req: Request, res: Response) => {
       const image = await fetch(
         `${FB_URI}/${recipient.id}?fields=profile_pic&access_token=${accessToken}`
       );
-      let imageUrl = await image.json();
-      imageUrl = imageUrl.profile_pic as string;
+      let imageUrl = await image.json() as { profile_pic: string } | string;
+      if (typeof imageUrl !== "string") {
+        imageUrl = imageUrl.profile_pic as string;
+      }
 
       // recipient
       recipient = {
@@ -158,16 +174,13 @@ const savePage = async (req: Request, res: Response) => {
         recipient,
         lastMessage,
         messages,
-      });
+      }) as IMessageDocument;
       console.log(message);
     }
-    
 
     return res.json({ status: "success", message: "Page saved successfully" });
 
   } catch (error: any) {
-    console.log(error);
-    
     return res
       .status(400)
       .json({ status: "error", error: error.message || "something went wrong." });
