@@ -1,7 +1,7 @@
 {
   "name": "page-connect",
   "version": "1.0.0",
-  "description": "",
+  "description": "A backend API for Page Connect",
   "type": "module",
   "main": "index.ts",
   "scripts": {
@@ -10,7 +10,7 @@
     "build": "tsc"
   },
   "keywords": [],
-  "author": "",
+  "author": "Md Hasib Askari",
   "license": "ISC",
   "dependencies": {
     "@ngrok/ngrok": "^1.4.0",
