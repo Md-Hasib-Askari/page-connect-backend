@@ -54,8 +54,6 @@ WEBHOOK_TOKEN=<Facebook Webhook Token>
 4. Run `npm run dev` to start the server.
 5. The server will be running on `http://localhost:<PORT>`.
 6. For production, run `npm run build` and then `npm start`.
-7. The API is hosted on Azure.
-8. The API is live at `https://page-connect-hwdbfkgkdygjeca7.eastus-01.azurewebsites.net`.
 
 ## Author
 - [Md Hasib Askari](https://findhasib.me)
