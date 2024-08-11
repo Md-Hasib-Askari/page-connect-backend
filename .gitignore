@@ -7,3 +7,4 @@ config.env
 .env
 .vercel
 *.js
+*.env

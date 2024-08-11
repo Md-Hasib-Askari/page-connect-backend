@@ -41,7 +41,7 @@ mongoose.connect(MONGO_URI, {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,
 }).then(() => {
-    console.log('MongoDB connected!');
+    console.log('app.ts:44 => MongoDB connected!');
 });
 
 // Routes
@@ -55,7 +55,7 @@ app.get('/test', (req: any, res: any) => {
 
 // Socket.io connection
 io.use((socket: any, next: any) => {
-    console.log("Socket connected");
+    console.log("app.ts:58 => Socket connected");
     
     const token = socket.handshake.auth.token;
     
@@ -68,10 +68,10 @@ io.use((socket: any, next: any) => {
 });
 
 io.on('connection', (socket: any) => {
-    console.log('User connected');
+    console.log('app.ts:71 => User connected');
 
     socket.on('disconnect', () => {
-        console.log('User disconnected');
+        console.log('app.ts:74 => User disconnected');
     });
 });
 

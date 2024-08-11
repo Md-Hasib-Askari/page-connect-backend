@@ -38,8 +38,7 @@ export const saveAccessToken = async (req: Request, res: Response) => {
         res.status(201).json({ jwtToken, status: 'success' });
         
     } catch (error) {
-        console.log(error);
-        
+        console.error(error);
         res.status(400).json({ status: 'error', error: 'Invalid access token' });
     }
 }
@@ -61,6 +60,7 @@ export const verifyUser = async (req: Request, res: Response) => {
 
         res.json({ status: 'success', data: user.name });
     } catch (error) {
+        console.error(error);
         res.status(400).json({ status: 'error', error: 'Invalid user' });
     }
 }
@@ -74,6 +74,21 @@ export const getUser = async (req: Request, res: Response) => {
         }
         res.json({ status: 'success', data: user.name });
     } catch (error) {
+        console.error(error);
         res.status(400).json({ status: 'error', error: 'Invalid user' });
+    }
+}
+
+export const logout = async (req: Request, res: Response) => {
+    const userID = req.headers['userID'] as string;
+    try {
+        await User.findOneAndUpdate({ _id: userID }, { 
+            'accessToken.token': '',
+            'accessToken.expiresIn': 0
+        });
+        return res.json({ status: 'success', message: 'Logged out successfully' });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ status: 'error', error: 'Invalid user' });
     }
 }

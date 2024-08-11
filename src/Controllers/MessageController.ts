@@ -19,6 +19,7 @@ const syncMessages = async (req: Request, res: Response) => {
 
         // if user is not found, return unauthorized error
         if (!user) {
+            console.warn("Unauthorized");
             return res.status(401).json({ status: "error", error: "Unauthorized" });
         }
         
@@ -35,7 +36,7 @@ const syncMessages = async (req: Request, res: Response) => {
         return res.status(201).json({ status: "success", data: messages });
 
     } catch (error: any) {
-        console.log(error);
+        console.error(error);
         
         return res
             .status(400)
@@ -51,6 +52,7 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         }) as IUserDocument;
         // if user is not found, return unauthorized error
         if (!user) {
+            console.warn("Unauthorized");
             return { status: "error", error: "Unauthorized" };
         }
 
@@ -82,6 +84,7 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
         const data = await response.json() as any;
 
         if (data.error) {
+            console.warn(data.error.message || "something went wrong.");
             return { status: "error", error: data.error.message || "something went wrong." };
         }
         
@@ -94,7 +97,7 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
             createdTime: new Date()
         }
         
-        const result = await Message.findOneAndUpdate({
+        await Message.findOneAndUpdate({
             pageID: pageID,
             'recipient.id': recipientID
         }, {
@@ -106,11 +109,11 @@ const sendMessage = async (userID: string, recipientID: string, message: string)
                 messages: newMessage
             }
         }, { upsert: true }) as IMessageDocument;
-        console.log(result);
 
         return { status: "success", data: newMessage };
 
     } catch (error: any) {
+        console.error(error);
         return { status: "error", error: error.message || "something went wrong." };
     }
 }

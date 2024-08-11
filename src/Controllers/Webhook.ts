@@ -99,9 +99,9 @@ const handleMessage = async (senderID: string, receivedMessage: any) => {
                     });                
             }
             io.emit('private_message', receivedMessage);
-            console.log('Message sent.')
+            console.log('Webhook.ts:102 => Message sent.')
         } catch (err: any) {
-            console.log('Error: ', err.message);
+            console.error('Error: ', err.message);
         }
     }
 }

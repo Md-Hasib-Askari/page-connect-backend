@@ -12,6 +12,7 @@ const router = express.Router();
 // User Routes
 router.get('/getUser', authVerify, UserController.getUser);
 router.get('/verifyUser', authVerify, UserController.verifyUser);
+router.get('/logout', authVerify, UserController.logout);
 
 // Save access token to MongoDB
 router.post('/saveAccessToken', UserController.saveAccessToken);

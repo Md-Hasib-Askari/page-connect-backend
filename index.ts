@@ -10,5 +10,5 @@ import { server as initializeApp } from './app.ts';
 
 const PORT: number = Number(process.env.RUNNING_PORT) || 5000;
 initializeApp.listen(PORT, () => {
-    console.log(`Server running @ http://localhost:${PORT}`)
+    console.log(`index.ts:13 => Server running @ http://localhost:${PORT}`);
 });

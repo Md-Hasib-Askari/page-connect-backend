@@ -11,7 +11,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     }
     jwt.verify(token, JWT_SECRET, function (err: any, decoded: any) {
         if (err) {
-            console.log(err);
+            console.error(err);
             res.status(401).json({status:"unauthorized"})
         } else {
             req.headers.userID = decoded['id'] as string;

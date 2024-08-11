@@ -18,7 +18,7 @@ const initSocket = (server: HttpServer) => {
         throw new Error('Socket.io failed to initialize');
     }
     io.use((socket, next) => {
-        console.log("Socket connected");
+        console.log("socket.ts:21 => Socket connected");
 
         const token = socket.handshake.auth.token;
 
@@ -31,11 +31,10 @@ const initSocket = (server: HttpServer) => {
     });
 
     io.on('connection', (socket) => {
-        console.log('User connected');
+        console.log('socket.ts:34 => User connected');
         
         // private message
         socket.on('private_message', ({ token, recipient, message }) => {
-            console.log('Message: ', { token, recipient, message });
             const { id: userID } = verifyToken(token) as JwtPayload;
 
             // send message to recipient
@@ -47,7 +46,7 @@ const initSocket = (server: HttpServer) => {
         });
 
         socket.on('disconnect', () => {
-            console.log('User disconnected');
+            console.log('socket.ts:49 => User disconnected');
         });
     });
 

@@ -31,6 +31,7 @@ const getPages = async (req: Request, res: Response) => {
 
     return res.json({ status: "success", data: data.data });
   } catch (error: any) {
+    console.error(error);
     return res
       .status(400)
       .json({ status: "error", error: error.message || "something went wrong." });
@@ -70,6 +71,7 @@ const getPage = async (req: Request, res: Response) => {
     return res.json({ status: "success", data });
 
   } catch (error: any) {
+    console.error(error);
     return res
       .status(400)
       .json({ status: "error", error: error.message || "something went wrong." });
@@ -89,6 +91,7 @@ const savePage = async (req: Request, res: Response) => {
 
     // if user is not found, return unauthorized error
     if (!user) {
+        console.warn("User not found");
         return res.status(401).json({ status: "error", error: "Unauthorized" });
     }
 
@@ -169,18 +172,18 @@ const savePage = async (req: Request, res: Response) => {
       }
 
       // save all the previous messages
-      const message = await Message.create({
+      await Message.create({
         pageID,
         recipient,
         lastMessage,
         messages,
       }) as IMessageDocument;
-      console.log(message);
     }
 
     return res.json({ status: "success", message: "Page saved successfully" });
 
   } catch (error: any) {
+    console.error(error);
     return res
       .status(400)
       .json({ status: "error", error: error.message || "something went wrong." });

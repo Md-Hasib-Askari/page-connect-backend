@@ -21,6 +21,7 @@ The API has the following endpoints:
 - `GET /api/V1/getUser`: Get the user data.
 - `GET /api/V1/verifyUser`: Verify the user.
 - `POST /api/V1/saveAccessToken`: Save the access token.
+- `GET /api/V1/logout`: Logout the user.
 
 ### Page
 - `GET /api/V1/getPages`: Get all the pages.
